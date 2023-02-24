@@ -1,7 +1,4 @@
-/** HOME.MODULE.CSS **/
-
 /** Mobile first development **/
-
 .container {
   margin-bottom: 14rem
     /* 224px */
@@ -31,6 +28,21 @@
   z-index: 1;
 }
 
+.cardLayout {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  column-gap: 1.5rem
+    /* 24px */
+  ;
+  row-gap: 1.5rem
+    /* 24px */
+  ;
+}
+
+.card {
+  justify-content: center;
+}
+
 /** Breakpoints:
   sm: min-width: 640px;
   md: min-width: 768px;
@@ -38,7 +50,6 @@
   xl: min-width: 1280px;
   2xl: min-width: 1536px;
 **/
-
 @media (min-width: 640px) {
   .container {
     padding-left: 1rem
@@ -60,6 +71,10 @@
       /* 24px */
     ;
   }
+
+  .cardLayout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 768px) {
@@ -78,9 +93,13 @@
     ;
   }
 
-    .heroImage {
-      right: 20%;
-    }
+  .heroImage {
+    right: 20%;
+  }
+
+  .cardLayout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1024px) {
@@ -105,7 +124,23 @@
     ;
   }
 
-    .heroImage {
-      right: 20%;
-    }
+  .heroImage {
+    right: 20%;
+  }
+
+  .cardLayout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .main {
+    margin-top: 7rem
+      /* 112px */
+    ;
+  }
+
+  .cardLayout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
