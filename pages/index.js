@@ -39,9 +39,9 @@ export default function Home() {
 							<Card
 								className={styles.card}
 								key={coffeeStore.id}
-								name={"DarkHorse Coffee"}
-								imgUrl="/static/hero-image.png"
-								href="/coffee-store/darkhorse-coffee"
+								name={coffeeStore.name}
+								imgUrl={coffeeStore.imgUrl}
+								href={`/coffee-store/${coffeeStore.id}`}
 							/>
 						);
 					})}
