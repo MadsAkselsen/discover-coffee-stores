@@ -28,6 +28,14 @@
   z-index: 1;
 }
 
+.heading2 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  padding-bottom: 2rem;
+  margin-top: 2rem;
+  color: var(--text-white-100);
+}
+
 .cardLayout {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
