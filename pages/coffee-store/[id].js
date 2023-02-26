@@ -19,12 +19,16 @@ export function getStaticPaths() {
 	console.log("getStaticPaths");
 	return {
 		paths: [{ params: { id: "0" } }, { params: { id: "1" } }],
-		fallback: false, // can also be true or 'blocking'
+		fallback: true, // can also be true or 'blocking'
 	};
 }
 
 const CoffeeStore = (props) => {
 	const router = useRouter();
+
+	if (router.isFallback) {
+		return <div>loading...</div>;
+	}
 
 	console.log("props", props);
 	return (
