@@ -8,6 +8,22 @@ import coffeeStoresData from "../data/coffee-stores.json";
 export async function getStaticProps(context) {
 	// logging only in terminal, not in dev tools in browser
 	console.log("hello from getStaticProps");
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization: "fsq3caR7Mz2J21BWYVnZg0nZQubyGjMLu6HEUIESaKs+XUQ=",
+		},
+	};
+
+	fetch(
+		"https://api.foursquare.com/v3/places/search?query=coffee&ll=55.68139607353823%2C12.556844966066258&limit=6",
+		options
+	)
+		.then((response) => response.json())
+		.then((response) => console.log(response))
+		.catch((err) => console.error(err));
 	return {
 		props: { coffeeStores: coffeeStoresData }, // will be passed to the page component as props
 	};
