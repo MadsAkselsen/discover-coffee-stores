@@ -2,27 +2,31 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import cls from "classnames";
+import { fetchCoffeeStores } from "@/lib/coffee-stores";
 
 import coffeeStoresData from "../../data/coffee-stores.json";
 
 import styles from "../../styles/coffee-store.module.css";
 import Image from "next/image";
 
-export function getStaticProps(staticProps) {
+export async function getStaticProps(staticProps) {
 	const params = staticProps.params;
+	const coffeeStores = await fetchCoffeeStores();
 	return {
 		props: {
-			coffeeStore: coffeeStoresData.find((coffeeStore) => {
-				return coffeeStore.id.toString() === params.id;
+			coffeeStore: coffeeStores.find((coffeeStore) => {
+				return coffeeStore.fsq_id.toString() === params.id;
 			}),
 		},
 	};
 }
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
 	console.log("===> getStaticPaths");
-	const paths = coffeeStoresData.map((coffeeStore) => {
-		return { params: { id: coffeeStore.id.toString() } };
+	const coffeeStores = await fetchCoffeeStores();
+	console.log(coffeeStores);
+	const paths = coffeeStores.map((coffeeStore) => {
+		return { params: { id: coffeeStore.fsq_id.toString() } };
 	});
 	return {
 		paths,
@@ -39,10 +43,9 @@ const CoffeeStore = (props) => {
 
 	// must be destructured after above loading state, because
 	// data doesn't exist yet
-	const { address, name, neighbourhood, imgUrl } = props.coffeeStore;
+	const { location, name, imgUrl } = props.coffeeStore;
 
 	const handleUpvoteButton = () => {};
-
 	return (
 		<div className={styles.layout}>
 			<Head>
@@ -57,10 +60,13 @@ const CoffeeStore = (props) => {
 						<h1 className={styles.name}>{name}</h1>
 					</div>
 					<Image
-						src={imgUrl}
+						className={styles.storeImg}
+						src={
+							imgUrl ||
+							"https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+						}
 						width={600}
 						height={360}
-						className={styles.storeImg}
 						alt={name}
 					/>
 				</div>
@@ -72,7 +78,7 @@ const CoffeeStore = (props) => {
 							height="24"
 							alt=""
 						/>
-						<p className={styles.text}>{address}</p>
+						<p className={styles.text}>{location.address}</p>
 					</div>
 					<div className={styles.iconWrapper}>
 						<Image
@@ -81,7 +87,7 @@ const CoffeeStore = (props) => {
 							height="24"
 							alt=""
 						/>
-						<p className={styles.text}>{neighbourhood}</p>
+						<p className={styles.text}>{location.region || "--"}</p>
 					</div>
 					<div className={styles.iconWrapper}>
 						<Image
