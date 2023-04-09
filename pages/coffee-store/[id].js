@@ -15,18 +15,18 @@ export async function getStaticProps(staticProps) {
 	return {
 		props: {
 			coffeeStore: coffeeStores.find((coffeeStore) => {
-				return coffeeStore.fsq_id.toString() === params.id;
+				return coffeeStore.id.toString() === params.id;
 			}),
 		},
 	};
 }
 
 export async function getStaticPaths() {
-	console.log("===> getStaticPaths");
+	// console.log("===> getStaticPaths");
 	const coffeeStores = await fetchCoffeeStores();
-	console.log(coffeeStores);
+	// console.log(coffeeStores);
 	const paths = coffeeStores.map((coffeeStore) => {
-		return { params: { id: coffeeStore.fsq_id.toString() } };
+		return { params: { id: coffeeStore.id.toString() } };
 	});
 	return {
 		paths,
@@ -43,7 +43,7 @@ const CoffeeStore = (props) => {
 
 	// must be destructured after above loading state, because
 	// data doesn't exist yet
-	const { location, name, imgUrl } = props.coffeeStore;
+	const { address, neighborhood, name, imgUrl } = props.coffeeStore;
 
 	const handleUpvoteButton = () => {};
 	return (
@@ -54,7 +54,7 @@ const CoffeeStore = (props) => {
 			<div className={styles.container}>
 				<div className={styles.col1}>
 					<div className={styles.backToHomeLink}>
-						<Link href="/">Back to home</Link>
+						<Link href="/">← Back to home</Link>
 					</div>
 					<div className={styles.nameWrapper}>
 						<h1 className={styles.name}>{name}</h1>
@@ -71,15 +71,28 @@ const CoffeeStore = (props) => {
 					/>
 				</div>
 				<div className={cls("glass", styles.col2)}>
-					<div className={styles.iconWrapper}>
-						<Image
-							src="/static/icons/places.svg"
-							width="24"
-							height="24"
-							alt=""
-						/>
-						<p className={styles.text}>{location.address}</p>
-					</div>
+					{address && (
+						<div className={styles.iconWrapper}>
+							<Image
+								src="/static/icons/places.svg"
+								width="24"
+								height="24"
+								alt=""
+							/>
+							<p className={styles.text}>{address}</p>
+						</div>
+					)}
+					{neighborhood && (
+						<div className={styles.iconWrapper}>
+							<Image
+								src="/static/icons/nearMe.svg"
+								width="24"
+								height="24"
+								alt=""
+							/>
+							<p className={styles.text}>{neighborhood}</p>
+						</div>
+					)}
 					<div className={styles.iconWrapper}>
 						<Image
 							src="/static/icons/nearMe.svg"
@@ -87,7 +100,7 @@ const CoffeeStore = (props) => {
 							height="24"
 							alt=""
 						/>
-						<p className={styles.text}>{location.region || "--"}</p>
+						<p className={styles.text}>{neighborhood}</p>
 					</div>
 					<div className={styles.iconWrapper}>
 						<Image

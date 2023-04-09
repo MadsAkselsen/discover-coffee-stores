@@ -8,7 +8,7 @@ import { fetchCoffeeStores } from "@/lib/coffee-stores";
 
 export async function getStaticProps(context) {
 	// logging only in terminal, not in dev tools in browser
-	console.log("hello from getStaticProps");
+	// console.log("hello from getStaticProps");
 
 	const coffeeStores = await fetchCoffeeStores();
 	// .catch((err) => console.error(err));
@@ -18,7 +18,7 @@ export async function getStaticProps(context) {
 }
 
 export default function Home(props) {
-	console.log("coffeeStores props", coffeeStoresData);
+	// console.log("coffeeStores props", coffeeStoresData);
 	const handleOnBannerBtnClick = () => {
 		console.log("hi banner button");
 	};
@@ -54,13 +54,13 @@ export default function Home(props) {
 								return (
 									<Card
 										className={styles.card}
-										key={coffeeStore.fsq_id}
+										key={coffeeStore.id}
 										name={coffeeStore.name}
 										imgUrl={
 											coffeeStore.imgUrl ||
 											"https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
 										}
-										href={`/coffee-store/${coffeeStore.fsq_id}`}
+										href={`/coffee-store/${coffeeStore.id}`}
 									/>
 								);
 							})}
