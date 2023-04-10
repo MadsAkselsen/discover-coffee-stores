@@ -6,7 +6,8 @@ import Card from "@/components/card";
 import coffeeStoresData from "../data/coffee-stores.json";
 import { fetchCoffeeStores } from "@/lib/coffee-stores";
 import useTrackLocation from "@/hooks/use-track-location";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ACTION_TYPES, StoreContext } from "@/store/store-context";
 
 export async function getStaticProps(context) {
 	// logging only in terminal, not in dev tools in browser
@@ -22,13 +23,16 @@ export async function getStaticProps(context) {
 export default function Home(props) {
 	const {
 		handleTrackLocation,
-		latLong,
+		// latLong,
 		locationErrorMsg,
 		isFindingLocation,
 	} = useTrackLocation();
 
-	const [coffeeStores, setCoffeeStores] = useState("");
+	// const [coffeeStores, setCoffeeStores] = useState("");
 	const [coffeeStoresError, setCoffeeStoresError] = useState(null);
+	const { dispatch, state } = useContext(StoreContext);
+
+	const { coffeeStores, latLong } = state;
 
 	console.log({ latLong, locationErrorMsg });
 
@@ -41,7 +45,13 @@ export default function Home(props) {
 						30
 					);
 					console.log({ fetchedCoffeeStores });
-					setCoffeeStores(fetchedCoffeeStores);
+					// setCoffeeStores(fetchedCoffeeStores);
+					dispatch({
+						type: ACTION_TYPES.SET_COFFEE_STORES,
+						payload: {
+							coffeeStores: fetchedCoffeeStores,
+						},
+					});
 				} catch (err) {
 					console.log({ err });
 					setCoffeeStoresError(err.message);
@@ -49,7 +59,7 @@ export default function Home(props) {
 			}
 		}
 		setCoffeeStoresByLocation();
-	}, [latLong]);
+	}, [dispatch, latLong]);
 
 	const handleOnBannerBtnClick = () => {
 		handleTrackLocation();
@@ -81,7 +91,7 @@ export default function Home(props) {
 				<div className={styles.heroImage}>
 					<Image
 						src="/static/hero-image.png"
-						alt=""
+						alt="hero-image"
 						width={700}
 						height={400}
 					/>

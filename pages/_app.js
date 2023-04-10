@@ -1,9 +1,12 @@
+import { StoreProvider } from "@/store/store-context";
 import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }) {
 	return (
 		<div>
-			<Component {...pageProps} />
+			<StoreProvider>
+				<Component {...pageProps} />
+			</StoreProvider>
 			<footer>
 				<p>© 2018 Gandalf</p>
 			</footer>

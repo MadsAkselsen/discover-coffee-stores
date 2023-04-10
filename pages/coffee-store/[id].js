@@ -1,51 +1,77 @@
-import Link from "next/link";
+import { useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import Head from "next/head";
-import cls from "classnames";
-import { fetchCoffeeStores } from "@/lib/coffee-stores";
+import Image from "next/image";
 
-import coffeeStoresData from "../../data/coffee-stores.json";
+import cls from "classnames";
 
 import styles from "../../styles/coffee-store.module.css";
-import Image from "next/image";
+import { fetchCoffeeStores } from "../../lib/coffee-stores";
+
+import { isEmpty } from "../../utils";
+import { StoreContext } from "@/store/store-context";
 
 export async function getStaticProps(staticProps) {
 	const params = staticProps.params;
+	console.log("params", params);
+
 	const coffeeStores = await fetchCoffeeStores();
+	const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+		return coffeeStore.id.toString() === params.id; //dynamic id
+	});
 	return {
 		props: {
-			coffeeStore: coffeeStores.find((coffeeStore) => {
-				return coffeeStore.id.toString() === params.id;
-			}),
+			coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
 		},
 	};
 }
 
 export async function getStaticPaths() {
-	// console.log("===> getStaticPaths");
 	const coffeeStores = await fetchCoffeeStores();
-	// console.log(coffeeStores);
 	const paths = coffeeStores.map((coffeeStore) => {
-		return { params: { id: coffeeStore.id.toString() } };
+		return {
+			params: {
+				id: coffeeStore.id.toString(),
+			},
+		};
 	});
 	return {
 		paths,
-		fallback: true, // can also be true or 'blocking'
+		fallback: true,
 	};
 }
 
-const CoffeeStore = (props) => {
+const CoffeeStore = (initialProps) => {
 	const router = useRouter();
 
+	const id = router.query.id;
+
+	const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+
+	const {
+		state: { coffeeStores },
+	} = useContext(StoreContext);
+
+	useEffect(() => {
+		if (isEmpty(initialProps.coffeeStore)) {
+			if (coffeeStores.length > 0) {
+				const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+					return coffeeStore.id.toString() === id; //dynamic id
+				});
+				setCoffeeStore(findCoffeeStoreById);
+			}
+		}
+	}, [coffeeStores, id, initialProps.coffeeStore]);
+
 	if (router.isFallback) {
-		return <div>loading...</div>;
+		return <div>Loading...</div>;
 	}
 
-	// must be destructured after above loading state, because
-	// data doesn't exist yet
-	const { address, neighborhood, name, imgUrl } = props.coffeeStore;
+	const { name, address, neighbourhood, imgUrl } = coffeeStore;
 
 	const handleUpvoteButton = () => {};
+
 	return (
 		<div className={styles.layout}>
 			<Head>
@@ -60,54 +86,46 @@ const CoffeeStore = (props) => {
 						<h1 className={styles.name}>{name}</h1>
 					</div>
 					<Image
-						className={styles.storeImg}
 						src={
 							imgUrl ||
 							"https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
 						}
 						width={600}
 						height={360}
+						className={styles.storeImg}
 						alt={name}
 					/>
 				</div>
+
 				<div className={cls("glass", styles.col2)}>
 					{address && (
 						<div className={styles.iconWrapper}>
 							<Image
 								src="/static/icons/places.svg"
+								alt="address"
 								width="24"
 								height="24"
-								alt=""
 							/>
 							<p className={styles.text}>{address}</p>
 						</div>
 					)}
-					{neighborhood && (
+					{neighbourhood && (
 						<div className={styles.iconWrapper}>
 							<Image
 								src="/static/icons/nearMe.svg"
+								alt="neighborhood"
 								width="24"
 								height="24"
-								alt=""
 							/>
-							<p className={styles.text}>{neighborhood}</p>
+							<p className={styles.text}>{neighbourhood}</p>
 						</div>
 					)}
 					<div className={styles.iconWrapper}>
 						<Image
-							src="/static/icons/nearMe.svg"
-							width="24"
-							height="24"
-							alt=""
-						/>
-						<p className={styles.text}>{neighborhood}</p>
-					</div>
-					<div className={styles.iconWrapper}>
-						<Image
 							src="/static/icons/star.svg"
+							alt="star"
 							width="24"
 							height="24"
-							alt=""
 						/>
 						<p className={styles.text}>1</p>
 					</div>
