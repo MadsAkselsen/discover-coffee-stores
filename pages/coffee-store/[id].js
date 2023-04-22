@@ -53,6 +53,8 @@ const CoffeeStore = (initialProps) => {
 		state: { coffeeStores },
 	} = useContext(StoreContext);
 
+	// if we dont have a coffee store from the getStaticProps (initialProps) that match
+	// the page id, then look in the context
 	useEffect(() => {
 		if (isEmpty(initialProps.coffeeStore)) {
 			if (coffeeStores.length > 0) {
