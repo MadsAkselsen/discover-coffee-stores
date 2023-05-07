@@ -44,6 +44,7 @@ export async function getStaticPaths() {
 
 const CoffeeStore = (initialProps) => {
 	const router = useRouter();
+	const [votingCount, setVotingCount] = useState(1);
 
 	const id = router.query.id;
 
@@ -52,6 +53,32 @@ const CoffeeStore = (initialProps) => {
 	const {
 		state: { coffeeStores },
 	} = useContext(StoreContext);
+
+	const handleCreateCoffeeStore = async (coffeeStore) => {
+		try {
+			const { id, name, voting, imgUrl, neighbourhood, address } =
+				coffeeStore;
+			const response = await fetch("/api/createCoffeeStore", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					id,
+					name,
+					voting: 0,
+					imgUrl,
+					neighbourhood: neighbourhood || "",
+					address: address || "",
+				}),
+			});
+
+			const dbCoffeeStore = await response.json();
+			console.log({ dbCoffeeStore });
+		} catch (err) {
+			console.error("Error creating coffee store", err);
+		}
+	};
 
 	// if we dont have a coffee store from the getStaticProps (initialProps) that match
 	// the page id, then look in the context
@@ -62,7 +89,11 @@ const CoffeeStore = (initialProps) => {
 					return coffeeStore.id.toString() === id; //dynamic id
 				});
 				setCoffeeStore(findCoffeeStoreById);
+				handleCreateCoffeeStore(findCoffeeStoreById);
 			}
+		} else {
+			// SSG
+			handleCreateCoffeeStore(initialProps.coffeeStore);
 		}
 	}, [coffeeStores, id, initialProps.coffeeStore]);
 
@@ -72,7 +103,10 @@ const CoffeeStore = (initialProps) => {
 
 	const { name, address, neighbourhood, imgUrl } = coffeeStore;
 
-	const handleUpvoteButton = () => {};
+	const handleUpvoteButton = () => {
+		let count = votingCount + 1;
+		setVotingCount(count);
+	};
 
 	return (
 		<div className={styles.layout}>
@@ -129,7 +163,7 @@ const CoffeeStore = (initialProps) => {
 							width="24"
 							height="24"
 						/>
-						<p className={styles.text}>1</p>
+						<p className={styles.text}>{votingCount}</p>
 					</div>
 
 					<button
