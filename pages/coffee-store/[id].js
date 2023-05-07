@@ -4,17 +4,18 @@ import Link from "next/link";
 import Head from "next/head";
 import Image from "next/image";
 
+import useSWR from "swr";
+
 import cls from "classnames";
 
 import styles from "../../styles/coffee-store.module.css";
 import { fetchCoffeeStores } from "../../lib/coffee-stores";
 
-import { isEmpty } from "../../utils";
+import { fetcher, isEmpty } from "../../utils";
 import { StoreContext } from "@/store/store-context";
 
 export async function getStaticProps(staticProps) {
 	const params = staticProps.params;
-	console.log("params", params);
 
 	const coffeeStores = await fetchCoffeeStores();
 	const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
@@ -50,6 +51,9 @@ const CoffeeStore = (initialProps) => {
 
 	const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
 
+	// SWR keeps client up to date without having to refresh page by fetching to check if data as changed
+	const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
+
 	const {
 		state: { coffeeStores },
 	} = useContext(StoreContext);
@@ -80,6 +84,16 @@ const CoffeeStore = (initialProps) => {
 		}
 	};
 
+	// check if the coffee shop exists in DB, and use it if it does exist
+	useEffect(() => {
+		if (data && data.length > 0) {
+			console.log("data from SWR", data);
+			setCoffeeStore(data[0]);
+
+			setVotingCount(data[0].voting);
+		}
+	}, [data]);
+
 	// if we dont have a coffee store from the getStaticProps (initialProps) that match
 	// the page id, then look in the context
 	useEffect(() => {
@@ -90,6 +104,7 @@ const CoffeeStore = (initialProps) => {
 				});
 				setCoffeeStore(findCoffeeStoreById);
 				handleCreateCoffeeStore(findCoffeeStoreById);
+				console.log("set coffeestore from context");
 			}
 		} else {
 			// SSG
@@ -107,6 +122,10 @@ const CoffeeStore = (initialProps) => {
 		let count = votingCount + 1;
 		setVotingCount(count);
 	};
+
+	if (error) {
+		return <div>Something went wrong retrieving coffee store page</div>;
+	}
 
 	return (
 		<div className={styles.layout}>
