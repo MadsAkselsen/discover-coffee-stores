@@ -87,7 +87,6 @@ const CoffeeStore = (initialProps) => {
 	// check if the coffee shop exists in DB, and use it if it does exist
 	useEffect(() => {
 		if (data && data.length > 0) {
-			console.log("data from SWR", data);
 			setCoffeeStore(data[0]);
 
 			setVotingCount(data[0].voting);
@@ -104,7 +103,6 @@ const CoffeeStore = (initialProps) => {
 				});
 				setCoffeeStore(findCoffeeStoreById);
 				handleCreateCoffeeStore(findCoffeeStoreById);
-				console.log("set coffeestore from context");
 			}
 		} else {
 			// SSG
