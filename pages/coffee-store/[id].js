@@ -45,7 +45,7 @@ export async function getStaticPaths() {
 
 const CoffeeStore = (initialProps) => {
 	const router = useRouter();
-	const [votingCount, setVotingCount] = useState(1);
+	const [votingCount, setVotingCount] = useState(0);
 
 	const id = router.query.id;
 
@@ -78,7 +78,6 @@ const CoffeeStore = (initialProps) => {
 			});
 
 			const dbCoffeeStore = await response.json();
-			console.log({ dbCoffeeStore });
 		} catch (err) {
 			console.error("Error creating coffee store", err);
 		}
@@ -116,10 +115,28 @@ const CoffeeStore = (initialProps) => {
 
 	const { name, address, neighbourhood, imgUrl } = coffeeStore;
 
-	const handleUpvoteButton = () => {
-		let count = votingCount + 1;
-		setVotingCount(count);
-	};
+	const handleUpvoteButton = async () => {
+		try {
+		  const response = await fetch("/api/favouriteCoffeeStoreById", {
+			method: "PUT",
+			headers: {
+			  "Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+			  id,
+			}),
+		  });
+	
+		  const dbCoffeeStore = await response.json();
+	
+		  if (dbCoffeeStore && dbCoffeeStore.length > 0) {
+			let count = votingCount + 1;
+			setVotingCount(count);
+		  }
+		} catch (err) {
+		  console.error("Error upvoting the coffee store", err);
+		}
+	  };
 
 	if (error) {
 		return <div>Something went wrong retrieving coffee store page</div>;

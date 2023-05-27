@@ -13,8 +13,7 @@ export async function getStaticProps(context) {
 	// logging only in terminal, not in dev tools in browser
 	// console.log("hello from getStaticProps");
 
-	const coffeeStores = await fetchCoffeeStores();
-	// .catch((err) => console.error(err));
+	const coffeeStores = await fetchCoffeeStores();;
 	return {
 		props: { coffeeStores }, // will be passed to the page component as props
 	};
@@ -34,8 +33,6 @@ export default function Home(props) {
 
 	const { coffeeStores, latLong } = state;
 
-	console.log({ latLong, locationErrorMsg });
-
 	useEffect(() => {
 		async function setCoffeeStoresByLocation() {
 			if (latLong) {
@@ -44,9 +41,6 @@ export default function Home(props) {
 						`/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`
 					);
 					const coffeeStores = await res.json();
-					// console.log({ res });
-					// console.log({ coffeeStores });
-					// setCoffeeStores(fetchedCoffeeStores);
 					dispatch({
 						type: ACTION_TYPES.SET_COFFEE_STORES,
 						payload: {
@@ -55,7 +49,7 @@ export default function Home(props) {
 					});
 					setCoffeeStoresError("");
 				} catch (err) {
-					console.log({ err });
+					console.error({ err });
 					setCoffeeStoresError(err.message);
 				}
 			}
